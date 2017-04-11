@@ -195,7 +195,6 @@ composer() {
 export -f composer
 
 status "Installing dependencies..."
-
 # check if we should use a composer.phar version bundled with the project
 if [[ -f "composer.phar" ]]; then
     [[ -x "composer.phar" ]] || error "File '/composer.phar' isn't executable; please 'chmod +x'!"
@@ -209,8 +208,7 @@ if [[ -f "composer.phar" ]]; then
 fi
 # echo composer version for info purposes
 # tail to get rid of outdated version warnings (Composer sends those to STDOUT instead of STDERR)
-composer --version 2> /dev/null | tail -n 1 | indent
-
+composer --version  | tail -n 1 
 # throw a notice if people have added their vendor dir to Git; that's bad practice and makes everything slow and cluttered
 if [[ -f "$composer_vendordir/autoload.php" && -d "$composer_vendordir/composer" ]]; then
     # we should not do this check separately; there is no reliable way of telling whether or not it really is the real Composer bin dir or if it comes from somewhere else
@@ -230,7 +228,6 @@ Next, edit your project's '.gitignore' file and add the folder
 '/$composer_vendordir/' to the list.$composer_warn_bindir
 For more info, refer to the Composer FAQ: http://bit.ly/1rlCSZU"
 fi
-
 # handle custom oauth keys
 export_env_dir "$env_dir" '^COMPOSER_GITHUB_OAUTH_TOKEN$'
 COMPOSER_GITHUB_OAUTH_TOKEN=${COMPOSER_GITHUB_OAUTH_TOKEN:-}
@@ -243,7 +240,9 @@ if [[ -n "$COMPOSER_GITHUB_OAUTH_TOKEN" ]]; then
     fi
 else
     # don't forget to remove any stored key if it's gone from the env
-    composer config -g --unset github-oauth.github.com &> /dev/null # redirect outdated version warnings (Composer sends those to STDOUT instead of STDERR)
+    composer config -g --unset github-oauth.github.com &
+# redirect outdated version warnings (Composer sends those to STDOUT instead of STDERR)
+
 fi
 # no need for the token to stay around in the env
 unset COMPOSER_GITHUB_OAUTH_TOKEN
@@ -300,3 +299,4 @@ install_newrelic_userini
 # done with platform installs; restore COMPOSER from previous value
 export COMPOSER="$COMPOSER_bak"
 unset COMPOSER_bak
+
